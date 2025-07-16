@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leitor de Código de Barras</title>
+  </head>
+  <body>
+    <h2>Escaneie um Código de Barras</h2>
+
+    <button id="iniciar">📷 Iniciar Leitura</button>
+    <br /><br />
+
+    <video
+      id="video"
+      width="300"
+      height="200"
+      style="border: 1px solid black; display: none"
+    ></video>
+    <p id="codigo">Código lido: nenhum</p>
+
+    <!-- Biblioteca ZXing -->
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script>
+      const codeReader = new ZXing.BrowserMultiFormatReader();
+
+      document.getElementById("iniciar").addEventListener("click", () => {
+        const video = document.getElementById("video");
+        video.style.display = "block";
+
+        codeReader
+          .listVideoInputDevices()
+          .then((videoInputDevices) => {
+            const firstDeviceId = videoInputDevices[0]?.deviceId;
+            return codeReader.decodeFromVideoDevice(
+              firstDeviceId,
+              "video",
+              (result, err) => {
+                if (result) {
+                  document.getElementById("codigo").innerText =
+                    "Código lido: " + result.getText();
+                  // Se quiser parar após ler:
+                  // codeReader.reset();
+                }
+              }
+            );
+          })
+          .catch((err) => console.error("Erro ao acessar câmera: ", err));
+      });
+    </script>
+  </body>
+</html>
