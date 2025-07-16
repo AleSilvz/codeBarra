@@ -23,7 +23,7 @@
     const btnIniciar = document.getElementById("iniciar");
     const btnParar = document.getElementById("parar");
 
-    let currentDeviceId = null;
+    let scanning = false;
 
     btnIniciar.addEventListener("click", () => {
       video.style.display = "block";
@@ -33,14 +33,26 @@
       codeReader
         .listVideoInputDevices()
         .then(videoInputDevices => {
-          currentDeviceId = videoInputDevices[0]?.deviceId;
-          return codeReader.decodeFromVideoDevice(currentDeviceId, 'video', (result, err) => {
-            if (result) {
+          // Procurar por câmera traseira
+          const backCamera = videoInputDevices.find(device =>
+            /back|trás|environment/i.test(device.label)
+          );
+
+          const selectedDeviceId = backCamera
+            ? backCamera.deviceId
+            : videoInputDevices[0]?.deviceId;
+
+          scanning = true;
+
+          codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+            if (result && scanning) {
               document.getElementById('codigo').innerText = "Código lido: " + result.getText();
-              // Se quiser parar a leitura automaticamente:
+              // Descomente abaixo se quiser parar automaticamente:
               // codeReader.reset();
+              // scanning = false;
               // btnIniciar.disabled = false;
               // btnParar.disabled = true;
+              // video.style.display = "none";
             }
           });
         })
@@ -48,6 +60,7 @@
     });
 
     btnParar.addEventListener("click", () => {
+      scanning = false;
       codeReader.reset();
       video.style.display = "none";
       btnIniciar.disabled = false;
