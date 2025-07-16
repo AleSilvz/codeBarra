@@ -48,11 +48,11 @@
             if (result && scanning) {
               document.getElementById('codigo').innerText = "Código lido: " + result.getText();
               // Descomente abaixo se quiser parar automaticamente:
-              // codeReader.reset();
-              // scanning = false;
-              // btnIniciar.disabled = false;
-              // btnParar.disabled = true;
-              // video.style.display = "none";
+              codeReader.reset();
+              scanning = false;
+              btnIniciar.disabled = false;
+              btnParar.disabled = true;
+              video.style.display = "none";
             }
           });
         })
